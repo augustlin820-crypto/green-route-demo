@@ -2,10 +2,130 @@
 <html lang="zh-TW">
 <head>
     <meta charset="UTF-8">
-    <title>山海順風 GreenRoute Demo</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>山海順風 GreenRoute</title>
+    <!-- 引入 Tailwind CSS 快速美化介面 -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        .hidden { display: none; }
+        .fade-in { animation: fadeIn 0.5s; }
+        @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+    </style>
 </head>
-<body>
-    <h1>山海順風 GreenRoute 🌿</h1>
-    <p>我的第一個 GitHub 測試網頁！</p>
+<body class="bg-gray-100 text-gray-800 font-sans">
+    <!-- 上方導覽列 (報告時用來切換視角) -->
+    <nav class="bg-green-700 text-white p-3 shadow-md flex justify-around sticky top-0 z-50">
+        <button onclick="switchView('farmer')" class="font-bold text-sm hover:text-green-200">👨‍🌾 1. 小農端</button>
+        <button onclick="switchView('driver')" class="font-bold text-sm hover:text-green-200">🚚 2. 物流端</button>
+        <button onclick="switchView('enterprise')" class="font-bold text-sm hover:text-green-200">🏢 3. 企業端</button>
+    </nav>
+
+    <!-- 模擬手機畫面大小 -->
+    <div class="max-w-md mx-auto mt-6 bg-white shadow-xl rounded-2xl overflow-hidden fade-in min-h-[500px]">
+        
+        <!-- 畫面一：小農端 -->
+        <div id="view-farmer" class="p-6 text-center">
+            <h2 class="text-2xl font-bold text-green-700 mb-2">一鍵 AI 上架 📸</h2>
+            <p class="text-gray-500 mb-6 text-sm">不需打字！拍下農產品即可自動生成文案與呼叫順風車。</p>
+            
+            <!-- 拍照按鈕 -->
+            <div id="upload-box" class="border-4 border-dashed border-green-300 rounded-xl p-10 cursor-pointer bg-green-50 hover:bg-green-100 transition" onclick="simulateAI()">
+                <div class="text-6xl mb-4">📷</div>
+                <p class="text-lg font-bold text-green-700">點擊模擬拍照</p>
+            </div>
+
+            <!-- AI 處理結果 (預設隱藏) -->
+            <div id="ai-result" class="hidden mt-4 text-left bg-gray-50 p-5 rounded-xl border border-gray-200 shadow-inner">
+                <p class="text-sm text-green-600 font-bold mb-1">✨ AI 視覺辨識完成</p>
+                <h3 class="text-xl font-bold mb-2">尖石鄉 高山初秋高麗菜</h3>
+                <div class="flex gap-2 mb-3">
+                    <span class="bg-green-100 text-green-800 text-xs px-2 py-1 rounded">預估 15 kg</span>
+                    <span class="bg-blue-100 text-blue-800 text-xs px-2 py-1 rounded">無農藥標籤</span>
+                </div>
+                <p class="text-sm text-gray-600 mb-4">已自動生成產地故事，本次出貨預估可產生運輸減碳量 <strong class="text-green-600">3.2 kg</strong>。</p>
+                <button class="w-full bg-green-600 text-white font-bold py-3 rounded-lg animate-pulse" onclick="alert('✅ 已成功將任務發送給附近即將下山的順風車！')">🚚 自動呼叫下山順風車</button>
+            </div>
+        </div>
+
+        <!-- 畫面二：司機端 -->
+        <div id="view-driver" class="hidden p-6">
+            <h2 class="text-2xl font-bold text-blue-700 mb-2">順風微物流 🗺️</h2>
+            <p class="text-gray-500 mb-4 text-sm">空車下山？順路幫偏鄉載貨，賺補貼＋累積碳積分！</p>
+            
+            <!-- 模擬地圖 -->
+            <div class="bg-gray-200 h-48 rounded-xl mb-5 flex items-center justify-center border border-gray-300 relative overflow-hidden">
+                <p class="text-gray-400 font-bold tracking-widest">[ 模擬路線地圖 ]</p>
+                <!-- 模擬地圖定位點動畫 -->
+                <div class="absolute top-1/2 left-1/2 w-4 h-4 bg-red-500 rounded-full border-2 border-white transform -translate-x-1/2 -translate-y-1/2 animate-bounce shadow-md"></div>
+            </div>
+
+            <!-- 任務卡片 -->
+            <div class="bg-blue-50 border border-blue-200 p-4 rounded-xl shadow-sm">
+                <div class="flex justify-between items-center mb-2">
+                    <h3 class="font-bold text-lg text-blue-900">李阿公的高麗菜 (15kg)</h3>
+                    <span class="bg-blue-200 text-blue-800 text-xs font-bold px-2 py-1 rounded-full">順路補貼 +$150</span>
+                </div>
+                <p class="text-sm text-gray-600 mb-1">📍 取件地：距離您目前路線偏離 1.2 公里</p>
+                <p class="text-sm text-gray-600 mb-3">🌱 完成此趟可獲碳積分: <strong class="text-green-600">3.2 pt</strong></p>
+                <button class="w-full bg-blue-600 text-white font-bold py-3 rounded-lg hover:bg-blue-700 transition" onclick="alert('✅ 接單成功！請跟著導航前往取件。')">✋ 順路接單</button>
+            </div>
+        </div>
+
+        <!-- 畫面三：企業端 -->
+        <div id="view-enterprise" class="hidden p-6">
+            <h2 class="text-2xl font-bold text-purple-700 mb-2">ESG 影響力儀表板 📊</h2>
+            <p class="text-gray-500 mb-4 text-sm">企業綠色採購、透明化碳足跡追蹤</p>
+            
+            <!-- 數據看板 -->
+            <div class="grid grid-cols-2 gap-4 mb-6">
+                <div class="bg-purple-50 p-4 rounded-xl border border-purple-100 text-center shadow-sm">
+                    <p class="text-xs text-purple-600 font-bold mb-1">本季運輸減碳量</p>
+                    <p class="text-3xl font-black text-purple-800">452 <span class="text-sm font-normal text-purple-600">kg</span></p>
+                </div>
+                <div class="bg-orange-50 p-4 rounded-xl border border-orange-100 text-center shadow-sm">
+                    <p class="text-xs text-orange-600 font-bold mb-1">支持偏鄉小農</p>
+                    <p class="text-3xl font-black text-orange-800">38 <span class="text-sm font-normal text-orange-600">位</span></p>
+                </div>
+            </div>
+
+            <h3 class="font-bold text-gray-700 mb-3">最新採購進度</h3>
+            <!-- 訂單卡片 -->
+            <div class="border border-gray-200 rounded-xl p-4 mb-5 flex justify-between items-center shadow-sm">
+                <div>
+                    <p class="font-bold text-gray-800">高山初秋高麗菜禮盒 x 50</p>
+                    <p class="text-xs text-gray-500 mt-1">來源: 新竹尖石鄉 / 順風車隊配送</p>
+                </div>
+                <div class="bg-green-100 text-green-700 text-xs font-bold px-3 py-1 rounded-full">已送達</div>
+            </div>
+
+            <button class="w-full bg-purple-600 hover:bg-purple-700 text-white font-bold py-3 rounded-lg transition" onclick="alert('📥 報告生成中...\n包含範疇三減碳數據與小農支持證明，已下載為 PDF。')">📄 一鍵下載 ESG 報告</button>
+        </div>
+
+    </div>
+
+    <!-- 簡單的互動程式碼 -->
+    <script>
+        function switchView(viewName) {
+            // 隱藏所有畫面
+            document.getElementById('view-farmer').classList.add('hidden');
+            document.getElementById('view-driver').classList.add('hidden');
+            document.getElementById('view-enterprise').classList.add('hidden');
+            
+            // 顯示被點擊的畫面
+            document.getElementById('view-' + viewName).classList.remove('hidden');
+        }
+
+        function simulateAI() {
+            let box = document.getElementById('upload-box');
+            // 替換成載入中動畫
+            box.innerHTML = '<div class="text-4xl mb-4 animate-spin">⏳</div><p class="font-bold text-green-700">AI 正在辨識作物與計算碳足跡...</p>';
+            
+            // 模擬 1.5 秒後顯示結果
+            setTimeout(() => {
+                box.classList.add('hidden');
+                document.getElementById('ai-result').classList.remove('hidden');
+            }, 1500);
+        }
+    </script>
 </body>
 </html>
